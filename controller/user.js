@@ -1,64 +1,76 @@
 const User = require('../models/users');
+const bcrypt = require('bcrypt');
 
 exports.postSignup = (req, res) => {
   const { name, email, password } = req.body;
-  console.log("-----------------------");
-  console.log(name, email, password);
-  User.create({
-    name: name,
-    email: email,
-    password: password,
-  })
-    .then(() => {
-      res.status(201).send("User created");
-    })
-    .catch((err) => {
-      console.error("Error creating user:", err);
-      if (err.name === 'SequelizeUniqueConstraintError') {
-        res.status(400).send("Email address already exists");
-      } else {
-        res.status(500).send("Error creating user backend");
+
+  bcrypt.genSalt(10, (err, salt) => {
+    if (err) {
+      console.error("Error generating salt:", err);
+      return res.status(500).send("Error creating user backend");
+    }
+
+    bcrypt.hash(password, salt, (err, hashedPassword) => {
+      if (err) {
+        console.error("Error hashing password:", err);
+        return res.status(500).send("Error creating user backend");
       }
+
+      User.create({
+        name: name,
+        email: email,
+        password: hashedPassword,
+      })
+        .then(() => {
+          res.status(201).send("User created");
+        })
+        .catch((err) => {
+          console.error("Error creating user:", err);
+          if (err.name === 'SequelizeUniqueConstraintError') {
+            res.status(400).send("Email address already exists");
+          } else {
+            res.status(500).send("Error creating user backend");
+          }
+        });
     });
+  });
 };
 
-
-exports.getSignup= (req, res) => {
-    User.findAll()
-      .then((users) => {
-        res.json(users);
-      })
-      .catch((err) => {
-        console.error(err);
-        res.status(500).send("Error getting users");
-      });
-  }
-
-
-// ----------------------------------------------
-
+exports.getSignup = (req, res) => {
+  User.findAll()
+    .then((users) => {
+      res.json(users);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error getting users");
+    });
+};
 
 exports.postLogin = (req, res) => {
   const { email, password } = req.body;
 
   User.findOne({ where: { email: email } })
-    .then(user => {
+    .then((user) => {
       if (!user) {
-        // User not found
         return res.status(404).send("User not found");
       }
 
-      if (user.password !== password) {
-        // Invalid password
-        return res.status(401).send("Invalid password");
-      }
+      bcrypt.compare(password, user.password, (err, result) => {
+        if (err) {
+          console.error("Error comparing passwords:", err);
+          return res.status(500).send("Error during login");
+        }
 
-      // Login successful
-      res.status(200).send("Login successful");
+        if (!result) {
+          return res.status(401).send("Invalid password");
+        }
+
+        res.status(200).send("Login successful");
+      });
     })
-    .catch(err => {
+    .catch((err) => {
       console.error("Error during login:", err);
       res.status(500).send("Error during login");
     });
 };
-

@@ -11,7 +11,7 @@ const postLogin = () => {
         alert('Login successful');
         // Perform any necessary actions after successful login
         // For example, redirect to a new page
-        window.location.href = "/dashboard";
+        window.location.href = "/";
       })
       .catch(error => {
         if (error.response) {
