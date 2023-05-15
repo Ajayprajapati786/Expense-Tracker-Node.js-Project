@@ -9,6 +9,17 @@ app.use(cors());
 
 app.use(adminRouter);
 
+app.use(express.static("public"));
+
+app.get("/signup", (req, res) => {
+  res.sendFile(__dirname + "/public/signup.html");
+});
+
+app.get("/login", (req, res) => {
+  res.sendFile(__dirname + "/public/login.html");
+});
+
+
 sequelize
   .sync()
   .then(() => {

@@ -21,3 +21,16 @@ exports.postSignup = (req, res) => {
       }
     });
 };
+
+
+exports.getSignup= (req, res) => {
+    User.findAll()
+      .then((users) => {
+        res.json(users);
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).send("Error getting users");
+      });
+  }
+
