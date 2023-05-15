@@ -34,3 +34,31 @@ exports.getSignup= (req, res) => {
       });
   }
 
+
+// ----------------------------------------------
+
+
+exports.postLogin = (req, res) => {
+  const { email, password } = req.body;
+
+  User.findOne({ where: { email: email } })
+    .then(user => {
+      if (!user) {
+        // User not found
+        return res.status(404).send("User not found");
+      }
+
+      if (user.password !== password) {
+        // Invalid password
+        return res.status(401).send("Invalid password");
+      }
+
+      // Login successful
+      res.status(200).send("Login successful");
+    })
+    .catch(err => {
+      console.error("Error during login:", err);
+      res.status(500).send("Error during login");
+    });
+};
+

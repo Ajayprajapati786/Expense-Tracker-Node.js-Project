@@ -10,7 +10,9 @@ const postSignup= () => {
       })
       .then(() => {
         alert('User created successfully');
-        window.location.reload(); 
+        // window.location.reload(); 
+        window.location.href = "/login";
+
       })
       .catch(error => {
         if (error.response) {
