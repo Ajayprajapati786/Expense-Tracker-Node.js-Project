@@ -7,7 +7,13 @@ const postLogin = () => {
       .post('/admin/login', { email, password }, {
         headers: { 'Content-Type': 'application/json' }
       })
-      .then(() => {
+      .then(response => {
+        // Extract the email from the response
+        const userEmail = response.data.email;
+        
+        // Store the email in local storage
+        localStorage.setItem('userEmail', userEmail);
+  
         alert('Login successful');
         // Perform any necessary actions after successful login
         // For example, redirect to a new page

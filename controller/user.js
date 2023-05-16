@@ -48,29 +48,31 @@ exports.getSignup = (req, res) => {
 };
 
 exports.postLogin = (req, res) => {
-  const { email, password } = req.body;
-
-  User.findOne({ where: { email: email } })
-    .then((user) => {
-      if (!user) {
-        return res.status(404).send("User not found");
-      }
-
-      bcrypt.compare(password, user.password, (err, result) => {
-        if (err) {
-          console.error("Error comparing passwords:", err);
-          return res.status(500).send("Error during login");
+    const { email, password } = req.body;
+  
+    User.findOne({ where: { email: email } })
+      .then((user) => {
+        if (!user) {
+          return res.status(404).send("User not found");
         }
-
-        if (!result) {
-          return res.status(401).send("Invalid password");
-        }
-
-        res.status(200).send("Login successful");
+  
+        bcrypt.compare(password, user.password, (err, result) => {
+          if (err) {
+            console.error("Error comparing passwords:", err);
+            return res.status(500).send("Error during login");
+          }
+  
+          if (!result) {
+            return res.status(401).send("Invalid password");
+          }
+  
+          // Send the email ID of the logged-in user
+          res.status(200).json({ email: user.email, message: "Login successful" });
+        });
+      })
+      .catch((err) => {
+        console.error("Error during login:", err);
+        res.status(500).send("Error during login");
       });
-    })
-    .catch((err) => {
-      console.error("Error during login:", err);
-      res.status(500).send("Error during login");
-    });
-};
+  };
+  
