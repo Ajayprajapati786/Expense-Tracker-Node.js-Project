@@ -9,15 +9,17 @@ const postLogin = () => {
       })
       .then(response => {
         // Extract the email from the response
-        const userEmail = response.data.email;
+        const token = response.data.token;
+        // const email = response.data.email;
         
         // Store the email in local storage
-        localStorage.setItem('userEmail', userEmail);
+        localStorage.setItem('token', token);
+        // localStorage.setItem('email', email);
   
         alert('Login successful');
         // Perform any necessary actions after successful login
         // For example, redirect to a new page
-        window.location.href = "/";
+        window.location.href = "/expense";
       })
       .catch(error => {
         if (error.response) {

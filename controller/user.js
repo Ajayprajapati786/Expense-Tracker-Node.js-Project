@@ -1,5 +1,7 @@
 const User = require('../models/users');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+
 
 exports.postSignup = (req, res) => {
   const { name, email, password } = req.body;
@@ -47,32 +49,37 @@ exports.getSignup = (req, res) => {
     });
 };
 
+function generateAccessToken (id){
+  return jwt.sign({userId: id}, 'token')
+}
+
 exports.postLogin = (req, res) => {
-    const { email, password } = req.body;
-  
-    User.findOne({ where: { email: email } })
-      .then((user) => {
-        if (!user) {
-          return res.status(404).send("User not found");
+  const { email, password } = req.body;
+
+  User.findOne({ where: { email: email } })
+    .then((user) => {
+      if (!user) {
+        return res.status(404).send("User not found");
+      }
+
+      bcrypt.compare(password, user.password, (err, result) => {
+        if (err) {
+          console.error("Error comparing passwords:", err);
+          return res.status(500).send("Error during login");
         }
-  
-        bcrypt.compare(password, user.password, (err, result) => {
-          if (err) {
-            console.error("Error comparing passwords:", err);
-            return res.status(500).send("Error during login");
-          }
-  
-          if (!result) {
-            return res.status(401).send("Invalid password");
-          }
-  
-          // Send the email ID of the logged-in user
-          res.status(200).json({ email: user.email, message: "Login successful" });
-        });
-      })
-      .catch((err) => {
-        console.error("Error during login:", err);
-        res.status(500).send("Error during login");
+
+        if (!result) {
+          return res.status(401).send("Invalid password");
+        }
+
+        // Send the email and id of the logged-in user
+        res.status(200).json({ token: generateAccessToken(user.id), message: "Login successful" });
       });
-  };
+    })
+    .catch((err) => {
+      console.error("Error during login:", err);
+      res.status(500).send("Error during login");
+    });
+};
+
   

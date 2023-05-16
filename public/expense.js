@@ -1,35 +1,41 @@
 const dataa = document.querySelector('#dataa');
 
-axios.get('/admin/expense')
-  .then(response => {
-    dataa.innerHTML = `
-      <table class="table table-bordered">
-        <thead class="thead-dark">
-          <tr>
-            <th>ID</th>
-            <th>Price</th>
-            <th>Name</th>
-            <th>Category</th>
-            <th>Delete</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${response.data.map(user => `
-            <tr>
-              <td>${user.id}</td>
-              <td>${user.expenseamount}</td>
-              <td>${user.description}</td>
-              <td>${user.category}</td>
-              <td>
-                <button class="btn btn-danger" onclick="deleteUser(event, ${user.id})">Delete</button>
-              </td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-    `;
+const token = localStorage.getItem('token');
 
-  });
+axios.get('/admin/expense', {
+  headers: {
+    'Authorization':  token
+  }
+})
+.then(response => {
+  dataa.innerHTML = `
+    <table class="table table-bordered">
+      <thead class="thead-dark">
+        <tr>
+          <th>ID</th>
+          <th>Price</th>
+          <th>Name</th>
+          <th>Category</th>
+          <th>Delete</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${response.data.map(user => `
+          <tr>
+            <td>${user.id}</td>
+            <td>${user.expenseamount}</td>
+            <td>${user.description}</td>
+            <td>${user.category}</td>
+            <td>
+              <button class="btn btn-danger" onclick="deleteUser(event, ${user.id})">Delete</button>
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+});
+
 
 
 
@@ -41,7 +47,11 @@ const postExpense = () => {
   
     axios
       .post('/admin/expense', { money, description,category }, {
-        headers: { 'Content-Type': 'application/json' }
+        headers: {
+             'Content-Type': 'application/json',
+             'Authorization': token 
+
+            }
       })
       .then(response => {
         // Extract the email from the response
@@ -71,19 +81,25 @@ const postExpense = () => {
 };
   
 
-    function deleteUser(event, id) {
-        event.stopPropagation();
-        
-        axios.delete(`/admin/expense/${id}`)
-          .then(() => {
-            console.log(id);
-            console.log("tttttttttttttttttttttttttttttttttttttt");
-            window.location.reload();
-          })
-          .catch(err => {
-            alert('Error deleting user: ' + err.message);
-          });
-      }
+// const token = localStorage.getItem('token');
+
+function deleteUser(event, id) {
+  event.stopPropagation();
+
+  axios.delete(`/admin/expense/${id}`, {
+    headers: {
+      'Authorization': token // Include the token in the Authorization header
+    }
+  })
+    .then(() => {
+      console.log(id);
+      console.log("tttttttttttttttttttttttttttttttttttttt");
+      window.location.reload();
+    })
+    .catch(err => {
+      alert('Error deleting user: ' + err.message);
+    });
+}
 
 
   

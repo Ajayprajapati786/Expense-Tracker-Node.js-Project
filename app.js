@@ -4,6 +4,9 @@ const cors = require("cors");
 const sequelize=require('./util/database');
 const adminRouter=require('./routes/user');
 const expenseRouter=require('./routes/expenses');
+
+const User = require('./models/users')
+const Expenses = require('./models/expenses')
 const app = express();
 app.use(bodyParser.json());
 app.use(cors());
@@ -24,6 +27,9 @@ app.get("/login", (req, res) => {
 app.get("/expense", (req, res) => {
   res.sendFile(__dirname + "/public/expense.html");
 });
+
+User.hasMany(Expenses);
+Expenses.belongsTo(User);
 
 sequelize
   .sync()

@@ -7,6 +7,8 @@ exports.postexpense = (req, res) => {
     expenseamount: money,
     category: category,
     description: description,
+    userId:req.user.id
+
   })
     .then(() => {
       res.status(201).send("User created");
@@ -19,7 +21,7 @@ exports.postexpense = (req, res) => {
 
 
 exports.getexpense = (req, res) => {
-  Expense.findAll()
+  Expense.findAll({where:{userId:req.user.id}})
     .then((expenses) => {
       res.status(200).json(expenses);
     })
@@ -31,8 +33,9 @@ exports.getexpense = (req, res) => {
 
 
 exports.deleteexpense =  (req, res) => {
+  console.log(`kjnjm8888888************************* ${req}`)
   const id = req.params.id;
-  Expense.destroy({ where: { id: id } })
+  Expense.destroy({ where: { id: id,userId:req.user.id } })
     .then(() => {
       res.send("User deletedd");
     })
