@@ -1,4 +1,5 @@
 const Expense = require("../models/expenses");
+const User = require("../models/users");
 
 exports.postexpense = (req, res) => {
   const { money, description, category } = req.body;
@@ -20,13 +21,47 @@ exports.postexpense = (req, res) => {
 };
 
 
+// exports.getexpense = (req, res) => {
+//   Expense.findAll({where:{userId:req.user.id}})
+//     .then((expenses) => {
+//       res.status(200).json(expenses);
+//     })
+//     .catch((err) => {
+//       console.error("Error retrieving expenses:", err);
+//       res.status(500).send(err);
+//     });
+// };
+
+
 exports.getexpense = (req, res) => {
-  Expense.findAll({where:{userId:req.user.id}})
-    .then((expenses) => {
-      res.status(200).json(expenses);
+  User.findOne({ where: { id: req.user.id } })
+    .then((user) => {
+      if (!user) {
+        // Handle case when user is not found
+        res.status(404).send("User not found");
+        return;
+      }
+
+      Expense.findAll({ where: { userId: req.user.id } })
+        .then((expenses) => {
+          const userData = {
+            user: {
+              id: user.id,
+              username: user.username,
+              isPremium: user.isPremium
+            },
+            expenses: expenses
+          };
+
+          res.status(200).json(userData);
+        })
+        .catch((err) => {
+          console.error("Error retrieving expenses:", err);
+          res.status(500).send(err);
+        });
     })
     .catch((err) => {
-      console.error("Error retrieving expenses:", err);
+      console.error("Error retrieving user:", err);
       res.status(500).send(err);
     });
 };
