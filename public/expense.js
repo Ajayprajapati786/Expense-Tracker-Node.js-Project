@@ -16,6 +16,15 @@ axios.get('/admin/expense', {
       isPremiumDiv.innerHTML = 'Premium User';
     }
   
+  
+    // showing showLeaderboard features button 
+    if (user.isPremium) {
+        const premiumFeatures = document.getElementById('showLeaderboard');
+        premiumFeatures.classList.remove('hidden');
+    }
+    
+
+
     // Remove button if user is premium
     if (user.isPremium) {
       const rzpButton = document.getElementById('rzp-button1');
@@ -54,7 +63,37 @@ axios.get('/admin/expense', {
   
   
 
-
+const showLeaderBoard= ()=>{
+    
+        // Perform GET request to "/premium/leaderboard"
+    axios.get('/premium/leaderboard')
+    .then(response => {
+      const leaderboardData = response.data;
+      const leaderboard = document.getElementById('leaderboard');
+      leaderboard.innerHTML = `
+        <table class="table table-bordered">
+          <thead class="thead-dark">
+            <tr>
+              <th>Name</th>
+              <th>Total Expense</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${leaderboardData.map(entry => `
+              <tr>
+                <td>${entry.name}</td>
+                <td>${entry.totalExpense}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+    })
+    .catch(error => {
+      console.error('Error retrieving leaderboard:', error);
+    });
+    
+}
 
 
 const postExpense = () => {
@@ -124,8 +163,7 @@ function buyPremium() {
     if (token) {
       axios.get("/admin/buypremium", {
         headers: { 'Authorization': token }
-      })
-        .then(response => {
+      }) .then(response => {
           const options = {
             "key": response.data.key_id,
             "name": "Acme Corp",
@@ -133,6 +171,9 @@ function buyPremium() {
             "order_id": response.data.order.orderId,
             "handler": function (response) {
             //   setPremium();
+            alert("ou are a premium user");
+            window.location.reload();
+
               axios.post("/admin/buypremium", {
                 orderId: options.order_id,
                 paymentId: response.razorpay_payment_id,
