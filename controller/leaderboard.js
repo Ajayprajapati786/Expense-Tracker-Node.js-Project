@@ -12,7 +12,7 @@ exports.getLeaderboard = async (req, res) => {
       include: [
         {
           model: Expense,
-          attributes: [],
+          attributes : [],
         },
       ],
       group: ["User.id"],
