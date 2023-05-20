@@ -1,5 +1,7 @@
 const Expense = require("../models/expenses");
 const User = require("../models/users");
+const { sequelize } = require("../util/database"); // Assuming you have defined the Sequelize instance as 'sequelize'
+
 
 exports.postexpense = (req, res) => {
   const { money, description, category } = req.body;
@@ -20,17 +22,6 @@ exports.postexpense = (req, res) => {
     });
 };
 
-
-// exports.getexpense = (req, res) => {
-//   Expense.findAll({where:{userId:req.user.id}})
-//     .then((expenses) => {
-//       res.status(200).json(expenses);
-//     })
-//     .catch((err) => {
-//       console.error("Error retrieving expenses:", err);
-//       res.status(500).send(err);
-//     });
-// };
 
 
 exports.getexpense = (req, res) => {
