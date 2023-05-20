@@ -35,3 +35,26 @@ const postLogin = () => {
       });
   };
   
+
+
+
+  function sendResetLink() {
+    var resetEmail = document.getElementById("resetEmail").value;
+    // Perform the necessary actions to send the reset link
+    // For example, you can use axios to make a request to your backend API
+    axios.post("/password/forgotpassword", { email: resetEmail })
+      .then(function (response) {
+        // Handle the response after sending the reset link
+        console.log(response.data);
+        // Close the modal
+        $("#resetPasswordModal").modal("hide");
+        // Display a success message
+        alert("Reset link sent successfully!");
+      })
+      .catch(function (error) {
+        // Handle any errors that occurred during the request
+        console.log(error);
+        // Display an error message to the user
+        alert("Failed to send reset link. Please try again.");
+      });
+  }

@@ -10,4 +10,6 @@ router.get("/admin/signup", userController.getSignup);
 
 router.post('/admin/login', userController.postLogin);
 
+router.post('/password/forgotpassword', userController.postForgotPassword);
+
 module.exports = router;

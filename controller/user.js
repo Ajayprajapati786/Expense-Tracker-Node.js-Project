@@ -2,6 +2,9 @@ const User = require('../models/users');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+var SibApiV3Sdk = require('sib-api-v3-sdk');
+var defaultClient = SibApiV3Sdk.ApiClient.instance;
+
 
 exports.postSignup = (req, res) => {
   const { name, email, password } = req.body;
@@ -82,4 +85,33 @@ exports.postLogin = (req, res) => {
     });
 };
 
-  
+exports.postForgotPassword = (req, res) => {
+  const { email } = req.body;
+  console.log(email);
+
+  // Configure API key authorization: api-key
+  var apiKey = defaultClient.authentications['api-key'];
+  apiKey.apiKey = "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";
+
+  var apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+
+  var sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+
+  sendSmtpEmail.to = [{ email: email, name: 'Ajay' }];
+  sendSmtpEmail.sender = { email: 'your-email@example.com', name: 'Your Name' };
+  sendSmtpEmail.subject = 'Forgot Password';
+  sendSmtpEmail.htmlContent = '<p>Hello, Please reset your password.</p>';
+
+  apiInstance.sendTransacEmail(sendSmtpEmail)
+    .then(function(data) {
+      console.log('API called successfully. Returned data: ' + JSON.stringify(data));
+      res.status(200).json({ message: 'Email sent successfully' });
+    })
+    .catch(function(error) {
+      console.error(error);
+      res.status(500).json({ error: 'Failed to send email' });
+    });
+};
+
+
+
