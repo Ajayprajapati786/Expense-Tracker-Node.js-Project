@@ -1,6 +1,8 @@
 const User = require('../models/users');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+require('dotenv').config();
+
 
 var SibApiV3Sdk = require('sib-api-v3-sdk');
 var defaultClient = SibApiV3Sdk.ApiClient.instance;
@@ -91,7 +93,7 @@ exports.postForgotPassword = (req, res) => {
 
   // Configure API key authorization: api-key
   var apiKey = defaultClient.authentications['api-key'];
-  apiKey.apiKey = "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";
+  apiKey.apiKey = process.env.API_KEY;;
 
   var apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
 
