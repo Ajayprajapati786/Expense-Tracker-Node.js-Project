@@ -5,6 +5,7 @@ const sequelize=require('./util/database');
 const adminRouter=require('./routes/user');
 const expenseRouter=require('./routes/expenses');
 const premiumMembership = require('./routes/buyPremium')
+const ForgotPasswordRequest = require('./models/reset-password');
 
 const User = require('./models/users')
 const Expenses = require('./models/expenses');
@@ -36,6 +37,9 @@ Expenses.belongsTo(User);
 
 User.hasMany(Order);
 Order.belongsTo(User);
+
+User.hasMany(ForgotPasswordRequest);
+ForgotPasswordRequest.belongsTo(User);
 
 sequelize
   .sync()
