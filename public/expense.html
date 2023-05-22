@@ -23,6 +23,7 @@
     <div class="container">
       <div id="isPremium" style="background-color: green; padding: 5px; color: white; width: fit-content;"></div>
       <button class="hidden" id="showLeaderboard"  onclick="showLeaderBoard()">show leaderboard</button>
+      <button class="hidden" id="downloadPdf"  onclick="downloadPdf()">Download pdf</button>
       <button class="premium-button" id="rzp-button1" style="position: relative;left: 100%; top: 50%!important;" onclick="buyPremium()">Buy premium</button>
       <h1>Expense</h1>
       <form>
@@ -67,6 +68,11 @@
    
 
     <!-- Optional JavaScript; choose one of the two! -->
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/vfs_fonts.js"></script>
+    
 
     <!-- Option 1: jQuery and Bootstrap Bundle (includes Popper) -->
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
