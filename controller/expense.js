@@ -3,6 +3,7 @@ const User = require("../models/users");
 const Links = require("../models/Links");
 const { sequelize } = require("../util/database"); // Assuming you have defined the Sequelize instance as 'sequelize'
 const AWS = require('aws-sdk')
+require('dotenv').config();
 
 exports.postexpense = (req, res) => {
   const { money, description, category } = req.body;
@@ -22,7 +23,6 @@ exports.postexpense = (req, res) => {
       res.status(500).send(err);
     });
 };
-
 
 
 exports.getexpense = (req, res) => {
@@ -86,7 +86,6 @@ exports.downloadexpense = async (req, res) => {
       console.log("User not found");
       return;
     }
-
     const stringifiedExpenses = JSON.stringify(user.expenses);
     console.log(stringifiedExpenses);
 
@@ -96,7 +95,6 @@ exports.downloadexpense = async (req, res) => {
 
     // Store fileURL with userId in the Links table
     const link = await Links.create({ Link: fileURL, userId: userId });
-
     res.status(200).json({ fileURL, success: true });
   } catch (error) {
     console.log("Error retrieving expenses:", error);
@@ -105,9 +103,9 @@ exports.downloadexpense = async (req, res) => {
 
 
 async function uploadToS3(data, filename) {
-  const BUCKET_NAME = "expensetrackingfile";
-  const IAM_USER_KEY = 'AKIA57S6YFP7HAJTNK3P';
-  const I_AM_USER_SECRET = '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';
+  const BUCKET_NAME = process.env.BUCKET_NAME;
+  const IAM_USER_KEY = process.env.IAM_USER_KEY;
+  const I_AM_USER_SECRET = process.env.I_AM_USER_SECRET;
 
   const s3bucket = new AWS.S3({
     accessKeyId: IAM_USER_KEY,
@@ -133,7 +131,6 @@ async function uploadToS3(data, filename) {
     });
   });
 }
-
 
 
 exports.getLinks = async (req, res) => {
