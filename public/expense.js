@@ -74,55 +74,59 @@ axios
     `;
   });
 
-  const downloadPdf = () => {
-    const token = localStorage.getItem("token");
-    axios
-      .get("/admin/expense", {
-        headers: {
-          Authorization: token,
-        },
-      })
-      .then((response) => {
-        console.log(response.data.expenses);
-  
-        var docDefinition = {
-          content: [
-            { text: 'Expense', style: 'header', alignment: 'center' },
-            // { text: 'Expenses', style: 'subheader', alignment: 'left' },
-            {
-              table: {
-                headerRows: 1,
-                widths: ['auto', 'auto', 'auto', 'auto'],
-                body: [
-                  ['Expense Amount', 'Description', 'Category', 'Created At'],
-                  ...response.data.expenses.map(expense => [expense.expenseamount, expense.description, expense.category, expense.createdAt])
-                ]
-              }
-            }
-          ],
-          styles: {
-            header: {
-              fontSize: 16,
-              bold: true,
-              margin: [0, 0, 0, 10]
+const downloadPdf = () => {
+  const token = localStorage.getItem("token");
+  axios
+    .get("/admin/expense", {
+      headers: {
+        Authorization: token,
+      },
+    })
+    .then((response) => {
+      console.log(response.data.expenses);
+
+      var docDefinition = {
+        content: [
+          { text: "Expense", style: "header", alignment: "center" },
+          // { text: 'Expenses', style: 'subheader', alignment: 'left' },
+          {
+            table: {
+              headerRows: 1,
+              widths: ["auto", "auto", "auto", "auto"],
+              body: [
+                ["Expense Amount", "Description", "Category", "Created At"],
+                ...response.data.expenses.map((expense) => [
+                  expense.expenseamount,
+                  expense.description,
+                  expense.category,
+                  expense.createdAt,
+                ]),
+              ],
             },
-            subheader: {
-              fontSize: 14,
-              bold: true,
-              margin: [0, 10, 0, 5]
-            }
-          }
-        };
-  
-        // Generate the PDF
-        var pdfDocGenerator = pdfMake.createPdf(docDefinition);
-  
-        // Download the PDF
-        pdfDocGenerator.download('expenses.pdf');
-      });
-  };
-  
-  
+          },
+        ],
+        styles: {
+          header: {
+            fontSize: 16,
+            bold: true,
+            margin: [0, 0, 0, 10],
+          },
+          subheader: {
+            fontSize: 14,
+            bold: true,
+            margin: [0, 10, 0, 5],
+          },
+        },
+      };
+
+      // Generate the PDF
+      var pdfDocGenerator = pdfMake.createPdf(docDefinition);
+
+      // Download the PDF
+      pdfDocGenerator.download("expenses.pdf");
+    });
+};
+
 const showLeaderBoard = () => {
   // Perform GET request to "/premium/leaderboard"
   axios
@@ -289,3 +293,43 @@ function buyPremium() {
       });
   }
 }
+
+function downloadFromBackend() {
+  axios
+    .get("/admin/download", { headers: { Authorization: token } })
+    .then((response) => {
+      console.log(response.data.fileURL);
+      var a = document.createElement("a");
+      a.href = response.data.fileURL;
+      a.download = "myexpense.csv";
+      a.click();
+    });
+}
+
+axios.get("/admin/Links", { headers: { Authorization: token } })
+  .then((response) => {
+    const links = response.data.links;
+    const linkDiv = document.getElementById("Linkss");
+
+    // Clear the existing content of the div
+    linkDiv.innerHTML = "";
+
+    // Iterate over the links array and create <a> elements for each link
+    links.forEach((link, index) => {
+      const linkElement = document.createElement("a");
+      linkElement.href = link.Link;
+      linkElement.textContent = `Link Number: ${index + 1 }`;
+      linkElement.target = "_blank";
+
+      // Append the link element to the div
+      linkDiv.appendChild(linkElement);
+
+      // Add a line break after each link
+      linkDiv.appendChild(document.createElement("br"));
+    });
+  })
+  .catch((error) => {
+    console.log(error);
+  });
+
+

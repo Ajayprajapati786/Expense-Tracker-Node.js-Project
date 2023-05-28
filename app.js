@@ -10,6 +10,7 @@ const ForgotPasswordRequest = require('./models/reset-password');
 const User = require('./models/users')
 const Expenses = require('./models/expenses');
 const Order = require("./models/order");
+const Links = require("./models/Links");
 const app = express();
 app.use(bodyParser.json());
 app.use(cors());
@@ -40,6 +41,9 @@ Order.belongsTo(User);
 
 User.hasMany(ForgotPasswordRequest);
 ForgotPasswordRequest.belongsTo(User);
+
+User.hasMany(Links);
+Links.belongsTo(User);
 
 sequelize
   .sync()
