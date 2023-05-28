@@ -10,7 +10,6 @@ const Links = sequelize.define('links', {
         allowNull: false
     },
     Link: Sequelize.STRING,
-    
 })
 
 module.exports = Links;
