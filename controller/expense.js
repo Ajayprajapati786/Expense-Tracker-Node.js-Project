@@ -5,6 +5,7 @@ const { sequelize } = require("../util/database"); // Assuming you have defined 
 const AWS = require('aws-sdk')
 require('dotenv').config();
 
+
 exports.postexpense = (req, res) => {
   const { money, description, category } = req.body;
 
@@ -26,6 +27,9 @@ exports.postexpense = (req, res) => {
 
 
 exports.getexpense = (req, res) => {
+  const { page, limit } = req.query; // Extract page and limit parameters from query string
+  const offset = (page - 1) * limit; // Calculate the offset for pagination
+
   User.findOne({ where: { id: req.user.id } })
     .then((user) => {
       if (!user) {
@@ -34,15 +38,23 @@ exports.getexpense = (req, res) => {
         return;
       }
 
-      Expense.findAll({ where: { userId: req.user.id } })
-        .then((expenses) => {
+      Expense.findAndCountAll({
+        where: { userId: req.user.id },
+        limit: parseInt(limit), // Convert limit to a number
+        offset: parseInt(offset), // Convert offset to a number
+      })
+        .then((result) => {
+          const expenses = result.rows;
+          const totalCount = result.count;
+
           const userData = {
             user: {
               id: user.id,
               username: user.username,
-              isPremium: user.isPremium
+              isPremium: user.isPremium,
             },
-            expenses: expenses
+            expenses,
+            totalCount,
           };
 
           res.status(200).json(userData);
@@ -60,7 +72,7 @@ exports.getexpense = (req, res) => {
 
 
 exports.deleteexpense =  (req, res) => {
-  console.log(`kjnjm8888888************************* ${req}`)
+  console.log(`************************* ${req}`)
   const id = req.params.id;
   Expense.destroy({ where: { id: id,userId:req.user.id } })
     .then(() => {
@@ -76,7 +88,6 @@ exports.deleteexpense =  (req, res) => {
 exports.downloadexpense = async (req, res) => {
   try {
     const userEmail = req.user.email;
-
     const user = await User.findOne({
       where: { email: userEmail },
       include: Expense,
@@ -130,8 +141,8 @@ async function uploadToS3(data, filename) {
       }
     });
   });
-}
 
+}
 
 exports.getLinks = async (req, res) => {
   try {
@@ -146,3 +157,6 @@ exports.getLinks = async (req, res) => {
     res.status(500).json({ success: false, error: "Internal server error" });
   }
 };
+
+
+

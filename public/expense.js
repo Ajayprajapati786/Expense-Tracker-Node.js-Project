@@ -4,14 +4,21 @@ const dataa = document.querySelector("#dataa");
 
 const token = localStorage.getItem("token");
 
+let currentPage = 1; // Set the initial page number
+const itemsPerPage = 2; // Set the number of items to display per page
+
 axios
   .get("/admin/expense", {
     headers: {
       Authorization: token,
     },
+    params: {
+      page: currentPage, // Specify the current page number
+      limit: itemsPerPage, // Specify the number of items to display per page
+    },
   })
   .then((response) => {
-    const { user, expenses } = response.data;
+    const { user, expenses, totalCount } = response.data;
 
     // Show premium user text
     if (user.isPremium) {
@@ -19,14 +26,13 @@ axios
       isPremiumDiv.innerHTML = "Premium User";
     }
 
-    // showing showLeaderboard features button
+    // Showing showLeaderboard features button
     if (user.isPremium) {
       const premiumFeatures = document.getElementById("showLeaderboard");
       premiumFeatures.classList.remove("hidden");
     }
 
-    // show download pdf button
-
+    // Show download pdf button
     if (user.isPremium) {
       const downloadPdf = document.getElementById("downloadPdf");
       downloadPdf.classList.remove("hidden");
@@ -38,6 +44,28 @@ axios
       rzpButton.parentNode.removeChild(rzpButton);
     }
 
+    // Generate table rows for expenses
+    const tableRows = expenses
+      .map(
+        (expense) => `
+          <tr>
+            <td>${expense.id}</td>
+            <td>${expense.expenseamount}</td>
+            <td>${expense.description}</td>
+            <td>${expense.category}</td>
+            <td>
+              <button class="btn btn-danger" onclick="deleteUser(event, ${
+                expense.id
+              })">Delete</button>
+            </td>
+            <td>${user.isPremium ? "Premium User" : "Regular User"}</td>
+          </tr>
+        `
+      )
+      .join("");
+
+    // Update the table with the generated rows
+    const dataa = document.getElementById("dataa");
     dataa.innerHTML = `
       <table class="table table-bordered">
         <thead class="thead-dark">
@@ -51,28 +79,106 @@ axios
           </tr>
         </thead>
         <tbody>
-          ${expenses
-            .map(
-              (expense) => `
-            <tr>
-              <td>${expense.id}</td>
-              <td>${expense.expenseamount}</td>
-              <td>${expense.description}</td>
-              <td>${expense.category}</td>
-              <td>
-                <button class="btn btn-danger" onclick="deleteUser(event, ${
-                  expense.id
-                })">Delete</button>
-              </td>
-              <td>${user.isPremium ? "Premium User" : "Regular User"}</td>
-            </tr>
-          `
-            )
-            .join("")}
+          ${tableRows}
         </tbody>
       </table>
     `;
+
+    // Calculate pagination
+    const totalPages = Math.ceil(totalCount / itemsPerPage);
+    // Generate pagination links
+    const paginationLinks = Array.from({ length: totalPages }, (_, index) => {
+      const pageNum = index + 1;
+      return `<p class="page-item${pageNum === currentPage ? ' active' : ''}">
+                <a class="page-link" href="#" onclick="changePage(${pageNum})">${pageNum}</a>
+              </p>`;
+    }).join("");
+
+    // Update the pagination links
+    const pagination = document.getElementById("pagination");
+    pagination.innerHTML = paginationLinks;
+  })
+  .catch((error) => {
+    console.error("Error fetching expenses:", error);
   });
+
+// Function to change the current page
+function changePage(pageNum) {
+  currentPage = pageNum;
+  // Call the API again with the updated page number
+  axios
+  .get("/admin/expense", {
+    headers: {
+      Authorization: token,
+    },
+    params: {
+      page: currentPage, // Specify the current page number
+      limit: itemsPerPage, // Specify the number of items to display per page
+    },
+  })
+  .then((response) => {
+    const { user, expenses, totalCount } = response.data;
+
+
+    // Generate table rows for expenses
+    const tableRows = expenses
+      .map(
+        (expense) => `
+          <tr>
+            <td>${expense.id}</td>
+            <td>${expense.expenseamount}</td>
+            <td>${expense.description}</td>
+            <td>${expense.category}</td>
+            <td>
+              <button class="btn btn-danger" onclick="deleteUser(event, ${
+                expense.id
+              })">Delete</button>
+            </td>
+            <td>${user.isPremium ? "Premium User" : "Regular User"}</td>
+          </tr>
+        `
+      )
+      .join("");
+
+    // Update the table with the generated rows
+    const dataa = document.getElementById("dataa");
+    dataa.innerHTML = `
+      <table class="table table-bordered">
+        <thead class="thead-dark">
+          <tr>
+            <th>ID</th>
+            <th>Price</th>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Delete</th>
+            <th>Premium</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${tableRows}
+        </tbody>
+      </table>
+    `;
+
+    // Calculate pagination
+    const totalPages = Math.ceil(totalCount / itemsPerPage);
+    // Generate pagination links
+    const paginationLinks = Array.from({ length: totalPages }, (_, index) => {
+      const pageNum = index + 1;
+      return `<p class="page-item${pageNum === currentPage ? ' active' : ''}">
+                <a class="page-link" href="#" onclick="changePage(${pageNum})">${pageNum}</a>
+              </p>`;
+    }).join("");
+
+    // Update the pagination links
+    const pagination = document.getElementById("pagination");
+    pagination.innerHTML = paginationLinks;
+  })
+  .catch((error) => {
+    console.error("Error fetching expenses:", error);
+  });
+}
+
 
 const downloadPdf = () => {
   const token = localStorage.getItem("token");
@@ -318,18 +424,14 @@ axios.get("/admin/Links", { headers: { Authorization: token } })
     links.forEach((link, index) => {
       const linkElement = document.createElement("a");
       linkElement.href = link.Link;
-      linkElement.textContent = `Link Number: ${index + 1 }`;
+      linkElement.textContent = `Link Number: ${index + 1 }  `;
       linkElement.target = "_blank";
 
       // Append the link element to the div
       linkDiv.appendChild(linkElement);
-
-      // Add a line break after each link
-      linkDiv.appendChild(document.createElement("br"));
     });
   })
   .catch((error) => {
     console.log(error);
   });
-
 
