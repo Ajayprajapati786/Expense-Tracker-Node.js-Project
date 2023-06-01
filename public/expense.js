@@ -32,6 +32,14 @@ axios
       premiumFeatures.classList.remove("hidden");
     }
 
+
+    if (user.isPremium) {
+      const downloadFromBackend = document.getElementById("downloadFromBackend");
+      downloadFromBackend.classList.remove("hidden");  
+    }
+
+
+
     // Show download pdf button
     if (user.isPremium) {
       const downloadPdf = document.getElementById("downloadPdf");
@@ -58,7 +66,6 @@ axios
                 expense.id
               })">Delete</button>
             </td>
-            <td>${user.isPremium ? "Premium User" : "Regular User"}</td>
           </tr>
         `
       )
@@ -75,7 +82,6 @@ axios
             <th>Name</th>
             <th>Category</th>
             <th>Delete</th>
-            <th>Premium</th>
           </tr>
         </thead>
         <tbody>
@@ -134,7 +140,6 @@ function changePage(pageNum) {
                 expense.id
               })">Delete</button>
             </td>
-            <td>${user.isPremium ? "Premium User" : "Regular User"}</td>
           </tr>
         `
       )
@@ -151,7 +156,7 @@ function changePage(pageNum) {
             <th>Name</th>
             <th>Category</th>
             <th>Delete</th>
-            <th>Premium</th>
+            
           </tr>
         </thead>
         <tbody>
@@ -179,13 +184,18 @@ function changePage(pageNum) {
   });
 }
 
+const downloadPdf = document.getElementById('downloadPdf');
 
-const downloadPdf = () => {
+const downloadPdff = () => {
   const token = localStorage.getItem("token");
   axios
     .get("/admin/expense", {
       headers: {
         Authorization: token,
+      },
+      params: {
+        page: 1, // Specify the current page number
+        limit: 100, // Specify the number of items to display per page
       },
     })
     .then((response) => {
@@ -233,8 +243,9 @@ const downloadPdf = () => {
     });
 };
 
+downloadPdf.addEventListener('click',downloadPdff)
+
 const showLeaderBoard = () => {
-  // Perform GET request to "/premium/leaderboard"
   axios
     .get("/premium/leaderboard")
     .then((response) => {
@@ -347,7 +358,7 @@ function buyPremium() {
           order_id: response.data.order.orderId,
           handler: function (response) {
             //   setPremium();
-            alert("ou are a premium user");
+            alert("You are a premium user");
             window.location.reload();
 
             axios
@@ -435,3 +446,9 @@ axios.get("/admin/Links", { headers: { Authorization: token } })
     console.log(error);
   });
 
+
+
+  function logout(){
+    localStorage.removeItem("token");
+    window.location.href="/";
+  }

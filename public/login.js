@@ -1,3 +1,8 @@
+const LoginButton = document.getElementById("LoginButton");
+
+
+const ResetButton = document.getElementById("ResetButton");
+
 const postLogin = () => {
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
@@ -36,9 +41,11 @@ const postLogin = () => {
   };
   
 
+  LoginButton.addEventListener('click',postLogin);
 
 
-  function sendResetLink() {
+
+  const sendResetLink =() => {
     var resetEmail = document.getElementById("resetEmail").value;
     // Perform the necessary actions to send the reset link
     // For example, you can use axios to make a request to your backend API
@@ -58,3 +65,6 @@ const postLogin = () => {
         alert("Failed to send reset link. Please try again.");
       });
   }
+
+
+  ResetButton.addEventListener('click',sendResetLink);

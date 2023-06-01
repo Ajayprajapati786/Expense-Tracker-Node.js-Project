@@ -6,7 +6,6 @@ const adminRouter=require('./routes/user');
 const expenseRouter=require('./routes/expenses');
 const premiumMembership = require('./routes/buyPremium')
 const ForgotPasswordRequest = require('./models/reset-password');
-
 const User = require('./models/users')
 const Expenses = require('./models/expenses');
 const Order = require("./models/order");
@@ -14,6 +13,8 @@ const Links = require("./models/Links");
 const app = express();
 app.use(bodyParser.json());
 app.use(cors());
+
+
 
 app.use(adminRouter);
 app.use(expenseRouter);
@@ -23,6 +24,10 @@ app.use(express.static("public"));
 
 app.get("/signup", (req, res) => {
   res.sendFile(__dirname + "/public/signup.html");
+});
+
+app.get("/", (req, res) => {
+  res.sendFile(__dirname + "/public/index.html");
 });
 
 app.get("/login", (req, res) => {

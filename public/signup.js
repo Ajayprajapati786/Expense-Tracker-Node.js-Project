@@ -28,3 +28,7 @@ const postSignup= () => {
       });
   };
   
+
+  const signupp= document.getElementById("signupp");
+
+  signupp.addEventListener('click',postSignup);

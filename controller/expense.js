@@ -1,7 +1,7 @@
 const Expense = require("../models/expenses");
 const User = require("../models/users");
 const Links = require("../models/Links");
-const { sequelize } = require("../util/database"); // Assuming you have defined the Sequelize instance as 'sequelize'
+const { sequelize } = require("../util/database"); 
 const AWS = require('aws-sdk')
 require('dotenv').config();
 
@@ -46,7 +46,6 @@ exports.getexpense = (req, res) => {
         .then((result) => {
           const expenses = result.rows;
           const totalCount = result.count;
-
           const userData = {
             user: {
               id: user.id,
