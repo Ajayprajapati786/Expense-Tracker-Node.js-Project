@@ -95,10 +95,12 @@ axios
     // Generate pagination links
     const paginationLinks = Array.from({ length: totalPages }, (_, index) => {
       const pageNum = index + 1;
-      return `<p class="page-item${pageNum === currentPage ? ' active' : ''}">
+      return `<span class="page-item${pageNum === currentPage ? ' active' : ''}" style="display: inline-block;">
                 <a class="page-link" href="#" onclick="changePage(${pageNum})">${pageNum}</a>
-              </p>`;
+              </span>`;
     }).join("");
+    
+    
 
     // Update the pagination links
     const pagination = document.getElementById("pagination");
@@ -170,9 +172,9 @@ function changePage(pageNum) {
     // Generate pagination links
     const paginationLinks = Array.from({ length: totalPages }, (_, index) => {
       const pageNum = index + 1;
-      return `<p class="page-item${pageNum === currentPage ? ' active' : ''}">
+      return `<span class="page-item${pageNum === currentPage ? ' active' : ''}" style="display: inline-block;">
                 <a class="page-link" href="#" onclick="changePage(${pageNum})">${pageNum}</a>
-              </p>`;
+              </span>`;
     }).join("");
 
     // Update the pagination links
